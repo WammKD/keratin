@@ -1,31 +1,29 @@
 #!/bin/bash
 
-cache_dir=/tmp/clipmenu.$USER/
+cache_dir=$HOME/.local/share/keratin
 mkdir -p -m0700 "$cache_dir"
 
 declare -A last_data
 
 while sleep 1; do
-    for selection in clipboard primary; do
-        if type -p xsel >/dev/null 2>&1; then
-            data=$(xsel --"$selection"; printf x)
-        else
-            data=$(xclip -o -sel "$selection"; printf x)
-        fi
+  if type -p xsel >/dev/null 2>&1; then
+    data=$(xsel --clipboard; printf x)
+  else
+    data=$(xclip -o -sel clipboard; printf x)
+  fi
 
-        # We add and remove the x so that trailing newlines are not stripped.
-        # Otherwise, they would be stripped by the very nature of how POSIX
-        # defines command substitution.
-        data=${data%x}
+  # We add and remove the x so that trailing newlines are not stripped.
+  # Otherwise, they would be stripped by the very nature of how POSIX
+  # defines command substitution.
+  data=${data%x}
 
-        [[ $data == *[^[:blank:]]* ]] || continue
+  [[ $data == *[^[:blank:]]* ]] || continue
 
-        [[ ${last_data[$selection]} == "$data" ]] && continue
-        last_data[$selection]=$data
+  [[ $last_data == "$data" ]] && continue
+  last_data=$data
 
-        md5=$(md5sum <<< "$data")
-        md5=${md5%% *}
+  md5=$(md5sum <<< "$data")
+  md5=${md5%% *}
 
-        printf '%s' "$data" > "$cache_dir/$(LC_ALL=C date +%F-%H-%M-%S)-$md5"
-    done
+  printf '%s' "$data" > "$cache_dir/$(LC_ALL=C date +%F-%H-%M-%S)-$md5"
 done
