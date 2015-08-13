@@ -1,11 +1,12 @@
-clipmenu is a simple clipboard manager using [dmenu][] and [xsel][].
+keratin is a fork of clipmenu, a simple clipboard manager using [dmenu][] and [xsel][]/[xclip][].
 
-To use it, start the `clipmenud` daemon, and then call `clipmenu` to launch
-`dmenu`. Upon choosing an entry, it is copied to the clipboard.
+To use it, start the `keratin-d` daemon by calling `keratin -d`, and then call `keratin` to launch
+`dmenu`. Upon choosing an entry, it is copied to the clipboard. Entries can also be deleted via the
+command `keratin -D`.
 
-All args passed to clipmenu are transparently dispatched to dmenu. That is, if
-you usually call dmenu with args to set colours and other properties, you can
-invoke clipmenu in exactly the same way to get the same effect.
+Some of the flags for customizing dmenu (-fn, -nb, -nf, -sb, -sf) are available to use with keratin.
+You invoke them in the same way you would with dmenu (e.g. `keratin -nb '#000000' -nf '#FFFFFF'`).
 
 [dmenu]: http://tools.suckless.org/dmenu/
 [xsel]: http://www.vergenet.net/~conrad/software/xsel/
+[xclip]: http://sourceforge.net/projects/xclip/
