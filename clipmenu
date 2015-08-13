@@ -1,6 +1,33 @@
 #!/bin/bash
 
 LC_COLLATE=C
+cache_dir="$HOME/.local/share/keratin"
+P="keratin"
+
+first_selection() {
+  declare -A selections
+  ordered_selections=()
+
+  files=("$cache_dir/"*)
+
+  for (( i=${#files[@]}-1; i>=0; i-- )); do
+    file=${files[$i]}
+
+    first_line=$(sed -n '/./{p;q}' "$file")
+
+    lines=$(wc -l "$file")
+    lines=${lines%% *}
+
+    if (( lines > 1 )); then
+      first_line+=" ($lines lines)"
+    fi
+
+    ordered_selections+=("$first_line")
+    selections[$first_line]=$file
+  done
+
+  echo "${selections[${ordered_selections[0]}]}"
+}
 
 declare -A selections
 ordered_selections=()
