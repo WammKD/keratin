@@ -58,6 +58,154 @@ dmenu_options() {
   echo ${selections[$chosen_line]}
 }
 
+
+
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      echo "Usage: keratin [OPTION]"
+      echo "Dmenu powered clipboard manager for Linux systems."
+      echo "Run without any flags to try to access the daemon and copying history."
+      echo ""
+      echo "  -c, --current         Returns the most recently copied/cut item in the clipboard"
+      echo "  -C, --copy            Copies argument to clipboard"
+      echo "  -d, --daemon          Start the keratin daemon"
+      echo "  -D, --delete          Delete clipboard entry"
+      echo "  -fn [font]            Defines the font or font set used for dmenu."
+      echo "                          eg. \"fixed\" or \"Monospace-12:normal\" (an xft font)"
+      echo "  -h, --help            Print this help guide and exit"
+      echo "  -K, --kill-daemon     Stop the keratin daemon"
+      echo "  -nb [color]           Defines the normal background color for dmenu."
+      echo "                          #RGB, #RRGGBB, and X color names are supported"
+      echo "  -nf [color]           Defines the normal foreground color for dmenu"
+      echo "  -s, --daemon-status   Stop the keratin daemon"
+      echo "  -sb [color]           Defines the selected background color for dmenu"
+      echo "  -sf [color]           Defines the selected foreground color for dmenu"
+      exit 0
+      ;;
+    -c|--current)
+      if type -p xsel >/dev/null 2>&1; then
+	echo $(xsel --clipboard)
+      else
+	echo $(xclip -o -sel clipboard)
+      fi
+      exit 0
+      ;;
+    -C|--copy)
+      shift
+      if type -p xsel >/dev/null 2>&1; then
+	echo "$1" | xsel -i --clipboard
+      else
+	echo "$1" | xclip -sel clipboard
+      fi
+      exit 0
+      ;;
+    -d|--daemon)
+      if
+	[[ `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
+      then
+	echo "Daemon already running."
+	exit 0
+      else
+	keratin-d &
+	if
+	  [[ `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
+	then
+	  echo "Daemon started."
+	  exit 0
+	else
+	  echo "Unknown error occurred; daemon did not start."
+	  exit 1
+	fi
+      fi
+      ;;
+    -D|--delete)
+      fs=$(first_selection)
+      P="DELETION"
+      chosen_file=$(dmenu_options)
+
+      rm "$chosen_file"
+
+      if
+	[ "$chosen_file" == "$fs" ]
+      then
+	fs=$(first_selection)
+
+	if type -p xsel >/dev/null 2>&1; then
+	  xsel -i --clipboard < "$fs"
+	else
+	  xclip -sel clipboard < "$fs"
+	fi
+	rm "$fs"
+      fi
+      exit 0
+      ;;
+    -K|--kill-daemon)
+      if
+	[[ `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
+      then
+	kill `ps -A | grep keratin-d | awk '{print $1;}'`
+	echo "Daemon stopped."
+	exit 0
+      else
+	echo "No daemon running."
+	exit 0
+      fi
+      ;;
+    -s|--daemon-status)
+      if
+	[[ `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
+      then
+	echo "Daemon running."
+	exit 0
+      else
+	echo "No daemon running."
+	exit 0
+      fi
+      ;;
+    -fn)
+      shift
+      FN="-fn $1"
+      shift
+      ;;
+    -nb)
+      shift
+      NB="-nb $1"
+      shift
+      ;;
+    -nf)
+      shift
+      NF="-nf $1"
+      shift
+      ;;
+    -sb)
+      shift
+      SB="-sb $1"
+      shift
+      ;;
+    -sf)
+      shift
+      SF="-sf $1"
+      shift
+      ;;
+    *)
+      echo "keratin should take no arguments other than accepted flags and accepted
+arguements to said flags. Either invalid flags or a disproportionate number of
+arguments-to-flags were used."
+      exit 1
+      ;;
+  esac
+done
+
+if
+  [[ ! `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
+then
+  echo "Daemon not running; run \"keratin -d\" or \"keratin --daemon\" to correct this."
+  exit 1
+fi
+
+
+
 for selection in clipboard primary; do
     if type -p xsel >/dev/null 2>&1; then
         xsel -i --"$selection" < "${selections[$chosen_line]}"
