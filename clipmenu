@@ -29,12 +29,13 @@ first_selection() {
   echo "${selections[${ordered_selections[0]}]}"
 }
 
-declare -A selections
-ordered_selections=()
+dmenu_options() {
+  declare -A selections
+  ordered_selections=()
 
-files=("/tmp/clipmenu.$USER/"*)
+  files=("$cache_dir/"*)
 
-for (( i=${#files[@]}-1; i>=0; i-- )); do
+  for (( i=${#files[@]}-1; i>=0; i-- )); do
     file=${files[$i]}
 
     first_line=$(sed -n '/./{p;q}' "$file")
@@ -43,18 +44,19 @@ for (( i=${#files[@]}-1; i>=0; i-- )); do
     lines=${lines%% *}
 
     if (( lines > 1 )); then
-        first_line+=" ($lines lines)"
+      first_line+=" ($lines lines)"
     fi
 
     ordered_selections+=("$first_line")
     selections[$first_line]=$file
-done
+  done
 
-chosen_line=$(
-    printf '%s\n' "${ordered_selections[@]}" | awk '!x[$0]++' | dmenu "$@"
-)
+  chosen_line=$(
+    printf '%s\n' "${ordered_selections[@]}" | dmenu -l 15 -p $P $FN $NB $NF $SB $SF "$@"
+  )
 
-[[ $chosen_line ]] || exit 1
+  echo ${selections[$chosen_line]}
+}
 
 for selection in clipboard primary; do
     if type -p xsel >/dev/null 2>&1; then
