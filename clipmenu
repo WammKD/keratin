@@ -206,10 +206,23 @@ fi
 
 
 
-for selection in clipboard primary; do
-    if type -p xsel >/dev/null 2>&1; then
-        xsel -i --"$selection" < "${selections[$chosen_line]}"
-    else
-        xclip -sel "$selection" < "${selections[$chosen_line]}"
-    fi
-done
+chosen_file=$(dmenu_options)
+[[ $chosen_file ]] || exit 1
+
+if type -p xsel >/dev/null 2>&1; then
+  data=$(xsel --clipboard; printf x)
+else
+  data=$(xclip -o -sel clipboard; printf x)
+fi
+
+if
+  [ "${data%x}" != "`cat $chosen_file`" ]
+then
+  if type -p xsel >/dev/null 2>&1; then
+    xsel -i --clipboard < "$chosen_file"
+  else
+    xclip -sel clipboard < "$chosen_file"
+  fi
+
+  rm "$chosen_file"
+fi
