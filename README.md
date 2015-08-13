@@ -1,6 +1,6 @@
 keratin is a fork of clipmenu, a simple clipboard manager using [dmenu][] and [xsel][]/[xclip][].
 
-To use it, start the `keratin-d` daemon by calling `keratin -d`, and then call `keratin` to launch
+To use it, start the `keratin-d` daemon by calling `keratin -d` and then call `keratin` to launch
 `dmenu`. Upon choosing an entry, it is copied to the clipboard. Entries can also be deleted via the
 command `keratin -D`.
 
