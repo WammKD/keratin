@@ -22,8 +22,14 @@ first_selection() {
       first_line+=" ($lines lines)"
     fi
 
-    ordered_selections+=("$first_line")
-    selections[$first_line]=$file
+    if
+      [ -z "$first_line" ]
+    then
+      rm $file
+    else
+      ordered_selections+=("$first_line")
+      selections[$first_line]=$file
+    fi
   done
 
   echo "${selections[${ordered_selections[0]}]}"
@@ -47,8 +53,14 @@ dmenu_options() {
       first_line+=" ($lines lines)"
     fi
 
-    ordered_selections+=("$first_line")
-    selections[$first_line]=$file
+    if
+      [ -z "$first_line" ]
+    then
+      rm $file
+    else
+      ordered_selections+=("$first_line")
+      selections[$first_line]=$file
+    fi
   done
 
   chosen_line=$(
