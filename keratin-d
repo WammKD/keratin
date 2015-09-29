@@ -27,9 +27,9 @@ while sleep 1; do
   md5=${md5%% *}
 
   if
-    [[ $(ls $cache_dir | wc -l) == $cache_size ]]
+    [[ $(ls "$cache_dir" | wc -l) == $cache_size ]]
   then
-    rm `ls -tr | tail -n -1`
+    rm "$cache_dir/"`ls -tr $cache_dir | tail -n -1`
   fi
 
   printf '%s' "$data" > "$cache_dir/$(LC_ALL=C date +%F-%H-%M-%S)-$md5"
