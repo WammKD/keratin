@@ -29,7 +29,7 @@ while sleep 1; do
   if
     [[ $(ls "$cache_dir" | wc -l) == $cache_size ]]
   then
-    rm "$cache_dir/"`ls -tr $cache_dir | tail -n -1`
+    rm "$cache_dir/"`ls -t $cache_dir | tail -n -1`
   fi
 
   printf '%s' "$data" > "$cache_dir/$(LC_ALL=C date +%F-%H-%M-%S)-$md5"
