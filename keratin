@@ -1,14 +1,16 @@
 #!/bin/bash
 
 LC_COLLATE=C
-cache_dir="$HOME/.local/share/keratin"
+LOGDIR="/tmp"
+LOGFILE="$LOGDIR/keratin.log"
+CACHE_DIR="$HOME/.local/share/keratin"
 P="keratin"
 
 first_selection() {
   declare -A selections
   ordered_selections=()
 
-  files=("$cache_dir/"*)
+  files=("$CACHE_DIR/"*)
 
   for (( i=${#files[@]}-1; i>=0; i-- )); do
     file=${files[$i]}
@@ -39,7 +41,7 @@ dmenu_options() {
   declare -A selections
   ordered_selections=()
 
-  files=("$cache_dir/"*)
+  files=("$CACHE_DIR/"*)
 
   for (( i=${#files[@]}-1; i>=0; i-- )); do
     file=${files[$i]}
@@ -119,7 +121,8 @@ while test $# -gt 0; do
 	echo "Daemon already running."
 	exit 0
       else
-	keratin-d &
+	keratin-d >> $LOGFILE 2>&1 &
+
 	if
 	  [[ `ps -A | grep keratin-d` == *[^[:blank:]]* ]]
 	then
