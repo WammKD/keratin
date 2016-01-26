@@ -99,9 +99,9 @@ while test $# -gt 0; do
       ;;
     -c|--current)
       if type -p xsel >/dev/null 2>&1; then
-	echo $(xsel --clipboard)
+	xsel --clipboard
       else
-	echo $(xclip -o -sel clipboard)
+	xclip -o -sel clipboard
       fi
       exit 0
       ;;
