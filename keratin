@@ -108,9 +108,9 @@ while test $# -gt 0; do
     -C|--copy)
       shift
       if type -p xsel >/dev/null 2>&1; then
-	echo "$1" | xsel -i --clipboard
+	echo -n "$1" | xsel -i --clipboard
       else
-	echo "$1" | xclip -sel clipboard
+	echo -n "$1" | xclip -sel clipboard
       fi
       exit 0
       ;;
